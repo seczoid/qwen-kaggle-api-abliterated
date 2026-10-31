@@ -1,5 +1,7 @@
 # Qwen Kaggle API — Abliterated GGUF
 
+[![Open in Kaggle](https://kaggle.com/static/images/open-in-kaggle.svg)](https://kaggle.com/kernels/welcome?src=https://github.com/seczoid/qwen-kaggle-api-abliterated/blob/master/notebooks/Launch_API.ipynb)
+
 A Strata-free Kaggle notebook for testing a Qwen3.8-Flash-Next abliterated GGUF with `llama.cpp`, then exposing the working server through an authenticated API and Cloudflare Tunnel.
 
 ## Status
