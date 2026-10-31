@@ -1,6 +1,6 @@
 # Qwen Kaggle API — Abliterated GGUF
 
-[![View notebook on GitHub](https://img.shields.io/badge/View_notebook-GitHub-181717?logo=github)](https://github.com/seczoid/qwen-kaggle-api-abliterated/blob/master/notebooks/Launch_API.ipynb)
+[![Open in Kaggle](https://kaggle.com/static/images/open-in-kaggle.svg)](https://kaggle.com/kernels/welcome?src=https://github.com/seczoid/qwen-kaggle-api-abliterated/blob/master/notebooks/Launch_API.ipynb)
 
 A Strata-free Kaggle notebook for testing a Qwen3.8-Flash-Next abliterated GGUF with `llama.cpp`, then exposing the working server through an authenticated API and Cloudflare Tunnel.
 
@@ -10,8 +10,8 @@ A Strata-free Kaggle notebook for testing a Qwen3.8-Flash-Next abliterated GGUF 
 
 ## Quick start
 
-1. Open [`notebooks/Launch_API.ipynb`](https://github.com/seczoid/qwen-kaggle-api-abliterated/blob/master/notebooks/Launch_API.ipynb) on GitHub.
-2. Because this repository is private, Kaggle's **Open in Kaggle** import link cannot fetch it directly. Download the notebook file from GitHub, then upload/import that `.ipynb` in Kaggle.
+1. Click **Open in Kaggle** above to import `notebooks/Launch_API.ipynb`.
+2. In Kaggle, enable **Internet** and a **GPU accelerator**. If Kaggle cannot import the notebook directly, download the `.ipynb` from GitHub and upload it manually.
 3. Enable Internet and a GPU accelerator.
 4. Attach a Kaggle Dataset containing the model GGUF shards, or configure a Hugging Face download in the notebook.
 5. Run the notebook from top to bottom. The initial notebook performs preflight checks and attempts to build `llama.cpp`; the API/tunnel stages are gated on a successful model load.
