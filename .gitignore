@@ -1,0 +1,11 @@
+# Local model/runtime assets
+models/
+*.gguf
+*.bin
+llama.cpp/
+cloudflared
+*.log
+.env
+.env.*
+__pycache__/
+.ipynb_checkpoints/
