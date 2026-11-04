@@ -1,47 +1,32 @@
-# Qwen Kaggle API — Abliterated GGUF
+# Ornith Heretic Kaggle API
 
 [![Open in Kaggle](https://kaggle.com/static/images/open-in-kaggle.svg)](https://kaggle.com/kernels/welcome?src=https://github.com/seczoid/qwen-kaggle-api-abliterated/blob/master/notebooks/Launch_API.ipynb)
 
-A Strata-free Kaggle notebook for testing a Qwen3.8-Flash-Next abliterated GGUF with `llama.cpp`, then exposing the working server through an authenticated API and Cloudflare Tunnel.
-
-## Status
-
-**Bootstrap stage — not yet validated end-to-end on Kaggle.** The first milestone is to prove that a compatible `llama.cpp` build can load the selected GGUF on the available Kaggle GPU/RAM configuration. Do not assume the model fits just because the files are available.
+A minimal Kaggle notebook that downloads a quantized **Ornith-1.5-9B Heretic** GGUF, builds upstream `llama.cpp`, starts an authenticated OpenAI-compatible API, and optionally exposes it through a Cloudflare Quick Tunnel.
 
 ## Quick start
 
-1. Click **Open in Kaggle** above to import `notebooks/Launch_API.ipynb`.
-2. In Kaggle, enable **Internet** and a **GPU accelerator**. If Kaggle cannot import the notebook directly, download the `.ipynb` from GitHub and upload it manually.
-3. Enable Internet and a GPU accelerator.
-4. Attach a Kaggle Dataset containing the model GGUF shards, or configure a Hugging Face download in the notebook.
-5. Run the notebook from top to bottom. The initial notebook performs preflight checks and attempts to build `llama.cpp`; the API/tunnel stages are gated on a successful model load.
+1. Click **Open in Kaggle** above.
+2. In Kaggle settings, enable **Internet** and a **GPU accelerator**.
+3. Run the notebook from top to bottom. It downloads the model automatically; no Kaggle Dataset attachment is required.
 
-## Design
+## Model choice
 
-- **Inference:** upstream `llama.cpp`; no Strata runtime or Strata expert pack.
-- **Model storage:** prefer a Kaggle Dataset mounted read-only under `/kaggle/input` to avoid duplicating multi-gigabyte files in `/kaggle/working`.
+Default: `Thunder13240/Ornith-1.5-9B-heretic-GGUF` — `Ornith-1.5-9B-heretic-IQ4_XS.gguf` (about 5.2 GB). This is a practical quality/size starting point for Kaggle's T4-class GPU options. The upstream model card reports favorable size/quality results for IQ4_XS, but published tokens-per-second figures are hardware-specific; actual Kaggle throughput must be measured on the allocated accelerator. For text-only chat, the vision projector file is not needed.
+
+To try another quant, change `MODEL_FILENAME` in the configuration cell to an exact GGUF filename from the [model repository](https://huggingface.co/Thunder13240/Ornith-1.5-9B-heretic-GGUF).
+
+## Design and constraints
+
+- **Inference:** upstream `llama.cpp`; no Strata runtime or expert-pack generation.
+- **Model download:** public Hugging Face file downloaded into `/kaggle/working/models`; Kaggle Internet must be enabled.
 - **API:** OpenAI-compatible endpoints provided by `llama-server`.
-- **Public access:** Cloudflare Tunnel, started only after local health checks pass.
-- **Security:** use a randomly generated API key; never commit secrets or print the key in notebook output.
-- **Persistence:** Kaggle Datasets can preserve files between sessions, but cannot preserve a live process. The server and tunnel must be restarted in each new session.
+- **Public access:** optional Cloudflare Quick Tunnel, started only after local health and chat-completion checks pass.
+- **Security:** the server uses a randomly generated API key. Keep it private; do not use this experimental endpoint for sensitive data.
+- **Session lifetime:** the server and Quick Tunnel stop when the Kaggle session ends. The tunnel URL changes when restarted.
 
-## Important constraints
+## Notes
 
-- Kaggle's writable `/kaggle/working` volume is limited. Avoid copying a large GGUF into it.
-- Available RAM + GPU memory may be insufficient for a 60+ GiB model. Memory mapping does not make the model's working set disappear; paging can make inference unusably slow.
-- Qwen3.8-Flash-Next needs a `llama.cpp` revision that supports its architecture and quantization. The notebook records the selected revision and fails early if the build fails.
-- A public tunnel is an internet-facing service. Keep API-key authentication enabled and do not expose an unauthenticated server.
-
-## Repository layout
-
-- `notebooks/Launch_API.ipynb` — Kaggle entry point.
-- `scripts/preflight.py` — small environment and model-file checks.
-
-## Roadmap
-
-1. Validate model architecture/quantization support and model loading.
-2. Validate authenticated local API requests.
-3. Add Cloudflare Tunnel and external smoke test.
-4. Add optional cache-dataset publishing/restoration and client configuration helpers.
-
-This repository is experimental. A successful build is not proof that the model will fit or generate correctly on a given Kaggle accelerator.
+- Kaggle resource allocations vary. A successful build does not guarantee the model loads or achieves a particular tokens-per-second rate.
+- The notebook has not yet been validated end-to-end on a live Kaggle session.
+- If the CUDA build fails, capture the full CMake error before changing compiler or CUDA settings.
