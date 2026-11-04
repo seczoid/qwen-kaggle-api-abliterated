@@ -18,7 +18,7 @@ To change quantization, set `MODEL_FILENAME` in the notebook configuration to an
 
 ## What the notebook does
 
-1. Downloads the selected GGUF from Hugging Face into `/kaggle/working/models`.
+1. Queries the live Hugging Face file list, selects the configured quant if it exists (otherwise chooses the best available fallback), and downloads it into `/kaggle/working/models`.
 2. Clones and builds upstream `llama.cpp` with CUDA, including a CUDA driver-stub hint for Kaggle runtimes that fail to expose `CUDA::cuda_driver` automatically.
 3. Starts `llama-server` with a random API key.
 4. Tests the local OpenAI-compatible chat-completions endpoint.
