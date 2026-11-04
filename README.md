@@ -10,23 +10,29 @@ A minimal Kaggle notebook that downloads a quantized **Ornith-1.5-9B Heretic** G
 2. In Kaggle settings, enable **Internet** and a **GPU accelerator**.
 3. Run the notebook from top to bottom. It downloads the model automatically; no Kaggle Dataset attachment is required.
 
-## Model choice
+## Model selection
 
-Default: `Thunder13240/Ornith-1.5-9B-heretic-GGUF` — `Ornith-1.5-9B-heretic-IQ4_XS.gguf` (about 5.2 GB). This is a practical quality/size starting point for Kaggle's T4-class GPU options. The upstream model card reports favorable size/quality results for IQ4_XS, but published tokens-per-second figures are hardware-specific; actual Kaggle throughput must be measured on the allocated accelerator. For text-only chat, the vision projector file is not needed.
+Default: [`Thunder13240/Ornith-1.5-9B-heretic-GGUF`](https://huggingface.co/Thunder13240/Ornith-1.5-9B-heretic-GGUF), file `Ornith-1.5-9B-heretic-IQ4_XS.gguf` (about 5.20 GB). IQ4_XS is a good starting point for balancing model quality and memory use on a constrained GPU. The repository's published speed figures are hardware-specific and should not be treated as Kaggle performance claims.
 
-To try another quant, change `MODEL_FILENAME` in the configuration cell to an exact GGUF filename from the [model repository](https://huggingface.co/Thunder13240/Ornith-1.5-9B-heretic-GGUF).
+To change quantization, set `MODEL_FILENAME` in the notebook configuration to an exact filename listed on the Hugging Face model page. The default is text-only; the optional vision projector is not downloaded.
 
-## Design and constraints
+## What the notebook does
 
-- **Inference:** upstream `llama.cpp`; no Strata runtime or expert-pack generation.
-- **Model download:** public Hugging Face file downloaded into `/kaggle/working/models`; Kaggle Internet must be enabled.
-- **API:** OpenAI-compatible endpoints provided by `llama-server`.
-- **Public access:** optional Cloudflare Quick Tunnel, started only after local health and chat-completion checks pass.
-- **Security:** the server uses a randomly generated API key. Keep it private; do not use this experimental endpoint for sensitive data.
-- **Session lifetime:** the server and Quick Tunnel stop when the Kaggle session ends. The tunnel URL changes when restarted.
+1. Downloads the selected GGUF from Hugging Face into `/kaggle/working/models`.
+2. Clones and builds upstream `llama.cpp` with CUDA, including a CUDA driver-stub hint for Kaggle runtimes that fail to expose `CUDA::cuda_driver` automatically.
+3. Starts `llama-server` with a random API key.
+4. Tests the local OpenAI-compatible chat-completions endpoint.
+5. Starts a Cloudflare Quick Tunnel only after the local checks pass.
 
-## Notes
+## Constraints and safety
 
-- Kaggle resource allocations vary. A successful build does not guarantee the model loads or achieves a particular tokens-per-second rate.
-- The notebook has not yet been validated end-to-end on a live Kaggle session.
-- If the CUDA build fails, capture the full CMake error before changing compiler or CUDA settings.
+- Enable Kaggle Internet and a GPU accelerator before running.
+- The notebook and public tunnel work only while the Kaggle session remains alive. Quick Tunnel URLs change on restart.
+- Resource allocations vary; a successful build does not guarantee the model fits or achieves a particular tokens/sec rate.
+- Keep the generated API key private. Anyone with the public tunnel URL and API key may be able to use the endpoint. Do not use this experimental endpoint for sensitive data.
+- The notebook is a best-effort launcher and still requires an end-to-end Kaggle run to validate the current runtime's CUDA configuration and model loading.
+
+## Repository layout
+
+- `notebooks/Launch_API.ipynb` — Kaggle launcher.
+- `scripts/preflight.py` — legacy standalone preflight helper; not required by the notebook.
